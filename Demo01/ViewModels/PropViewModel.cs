@@ -246,6 +246,7 @@ namespace Demo01.Models
         {
             typeFromFamily= message.Value;
         }
+        
         /// <summary>
         /// 名字输入框不为空时，改变按钮可用性
         /// </summary>

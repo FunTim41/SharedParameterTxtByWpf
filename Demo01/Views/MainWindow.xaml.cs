@@ -1,5 +1,4 @@
-﻿using Demo01.ViewModels;
-using System.Text;
+﻿using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -9,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Demo01.ViewModels;
 
 namespace Demo01
 {
@@ -19,7 +19,8 @@ namespace Demo01
     {
         public MainWindow()
         {
-            InitializeComponent();this.DataContext=new MainViewModel();
+            InitializeComponent();
+            this.DataContext = new MainViewModel();
             TitleBar.MouseMove += (s, e) =>
             {
                 if (e.LeftButton == MouseButtonState.Pressed)
@@ -32,7 +33,5 @@ namespace Demo01
                 this.Close();
             };
         }
-
-      
     }
 }
