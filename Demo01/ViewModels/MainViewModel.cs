@@ -11,17 +11,19 @@ using System.Windows;
 using System.Windows.Documents;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Messaging.Messages;
 using Demo01.Models;
 using Demo01.Views;
 using Microsoft.Win32;
 
 namespace Demo01.ViewModels
 {
-    public partial class MainViewModel : ObservableObject
+    public partial class MainViewModel : ObservableObject,IRecipient<ValueChangedMessage<Param>>
     {
         public MainViewModel()
         {
-
+            WeakReferenceMessenger.Default.Register(this, "新参数");
 
         }
         /// <summary>
@@ -165,6 +167,17 @@ namespace Demo01.ViewModels
                     "*PARAM\tGUID\tNAME\tDATATYPE\tDATACATEGORY\tGROUP\tVISIBLE\tDESCRIPTION\tUSERMODIFIABLE"
                 );
             }
+        }
+        /// <summary>
+        /// 接收的新参数
+        /// </summary>
+        [ObservableProperty]
+        Param newParam;
+        public void Receive(ValueChangedMessage<Param> message)
+        {
+            NewParam= message.Value;
+            NewParam.GroupId= SelectedGroup.Id;
+            SelectedGroup.ParamList.Add(NewParam);
         }
     }
 }

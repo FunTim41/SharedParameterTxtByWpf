@@ -7,8 +7,8 @@
     xmlns:local="clr-namespace:Demo01.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2"
-        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        Title="参数属性"
+    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+    Title="参数属性"
     Width="365"
     Height="300"
     Background="#f0f0f0"
@@ -24,8 +24,7 @@
             x:Name="propNameBox"
             Height="24"
             Margin="2"
-            Text="{Binding PName}"
-             />
+            Text="{Binding PName}" />
         <TextBlock Margin="2" Text="规程：" />
         <ComboBox
             Margin="2"
@@ -46,38 +45,41 @@
         </ComboBox>
 
         <StackPanel Margin="2" Orientation="Horizontal">
-            <CheckBox Content="是否可见" />
-            <CheckBox Margin="15,0,0,0" Content="是否可修改" />
-            <TextBlock 
-                        Text="{Binding SelectedRule.Name}" />
-                <TextBlock
-                        Text="{Binding SelectedType.Name}" />
+            <CheckBox Content="是否可见" IsChecked="{Binding PVisible}" />
+            <CheckBox
+                Margin="15,0,0,0"
+                Content="是否可修改"
+                IsChecked="{Binding PModify}" />
+            <TextBlock Text="{Binding SelectedRule.Name}" />
+            <TextBlock Text="{Binding SelectedType.Name}" />
         </StackPanel>
         <TextBlock Margin="2" Text="工具提示说明：" />
-        <xctk:WatermarkTextBox   Background="Transparent" BorderThickness="0"        
-            Width="300" Height="23" 
-            Margin="2" TextWrapping="Wrap"
+        <xctk:WatermarkTextBox
+            Width="300"
+            Height="23" IsReadOnly="True"
+            Margin="2"
             HorizontalAlignment="Left"
-            Text="{Binding ToolTipInfomation}"
-                Watermark="&lt;无工具提示说明。编辑此参数以编写自定义工具提示。自定义工具提示限为 250 个字符。&lt;" />
+            Background="Transparent"
+            BorderThickness="0"
+            Text="{Binding PDes}"
+            TextWrapping="Wrap"
+            Watermark="&lt;无工具提示说明。编辑此参数以编写自定义工具提示。自定义工具提示限为 250 个字符。&lt;" />
         <Button
             Width="100"
             Margin="2"
             HorizontalAlignment="Left"
-           Command="{Binding LoadEditCommand }"
+            Command="{Binding LoadEditCommand}"
             Content="编辑工具提示" />
         <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
             <Button
                 x:Name="okBtn"
                 Width="80"
                 Margin="2"
-               
-                Content="确定"
-                IsEnabled="False" />
+                Command="{Binding AddNewParaCommand}"
+                Content="确定" />
             <Button
                 Width="80"
                 Margin="2"
-                
                 Content="取消" />
         </StackPanel>
     </StackPanel>

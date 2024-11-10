@@ -18,28 +18,41 @@ namespace Demo01.Models
 {
     partial class PropViewModel : ObservableRecipient, IRecipient<ValueChangedMessage<string>>
     {
+        /// <summary>
+        /// 确认，按钮可用性
+        /// </summary>
+        bool allowNew = false;
+
         public PropViewModel()
         {
-            IsActive = true; 
+            IsActive = true;
             WeakReferenceMessenger.Default.Register(this, "工具提示消息");
             LoadparaInfo();
         }
 
-        [ObservableProperty]
+        /// <summary>
+        /// 新参数
+        /// </summary>
         Param parameter;
 
+        /// <summary>
+        /// 输入的共享参数名称
+        /// </summary>
         [ObservableProperty]
         string pName;
+
         /// <summary>
         /// 共享参数规程
         /// </summary>
         [ObservableProperty]
         string pRule;
+
         /// <summary>
         /// 共享参数类型
         /// </summary>
         [ObservableProperty]
         string pPType;
+
         /// <summary>
         /// DataCategory
         /// </summary>
@@ -53,57 +66,50 @@ namespace Demo01.Models
         /// </summary>
         [ObservableProperty]
         bool pVisible;
+
         /// <summary>
         /// 共享参数描述
         /// </summary>
         [ObservableProperty]
         string pDes;
+
         /// <summary>
         /// revit用户是否能修改
         /// </summary>
         [ObservableProperty]
         bool pModify;
 
+        /// <summary>
+        /// 规程列表
+        /// </summary>
         [ObservableProperty]
         ObservableCollection<Rule> ruleList = new();
+
         /// <summary>
         /// 选中的规程
         /// </summary>
         [ObservableProperty]
         Rule selectedRule = new();
+
         /// <summary>
         /// 选中的参数类型
         /// </summary>
         [ObservableProperty]
         MyType selectedType = new();
+
         /// <summary>
         /// 来自族类型的参数类型的名字
         /// </summary>
         string TypeFromFamily = string.Empty;
-        /// <summary>
-        /// 工具提示说明
-        /// </summary>
-        [ObservableProperty]
-        string toolTipInfomation;
-        [RelayCommand]
-        void SetParamProp()
-        {
-            Parameter.Guid = Guid.NewGuid();
-            Parameter.Name = "Name";
-            Parameter.Rule = "Name";
-            Parameter.ParamType = "saf";
-            Parameter.FamType = "adf";
-            //Parameter.GroupId =1;MainViewModel里设置
-            Parameter.isVisible = true;
-            Parameter.Describe = "adf";
-            Parameter.isUserCanModify = true;
-        }
+
+       
+
         /// <summary>
         /// 得到最新的参数类型
         /// </summary>
         [RelayCommand]
         void SelecrFamilyType()
-        {//切换规程时选中第一个
+        { //切换规程时选中第一个
             if (SelectedType == null)
             {
                 SelectedType = SelectedRule.TypeList[0];
@@ -140,17 +146,53 @@ namespace Demo01.Models
                 }
             }
         }
+
         ParamToolTipView paramToolTipView;
+
         /// <summary>
         /// 打开提示编辑窗口
         /// </summary>
         [RelayCommand]
         void LoadEdit()
         {
-             paramToolTipView=ParamToolTipView.GetInstance;
-                     paramToolTipView.ShowDialog();
-            
+            paramToolTipView = ParamToolTipView.GetInstance;
+            paramToolTipView.ShowDialog();
         }
+
+        /// <summary>
+        /// 添加新参数到主窗口
+        /// </summary>
+        [RelayCommand(CanExecute = nameof(CanAddNew))]
+        void AddNewPara()
+        {
+            parameter = new Param()
+            {
+                Guid = Guid.NewGuid().ToString("D"),
+                Name = PName,
+                Rule = SelectedRule.Name,
+                isVisible=PVisible,
+                isUserCanModify=PModify,
+                Describe=PDes
+                
+            };
+            if (SelectedType.ParaType.Contains("-"))
+            {
+                parameter.ParamType = "FAMILYTYPE";
+                parameter.FamType = SelectedType.ParaType;
+            }
+            else
+            {
+                parameter.ParamType = SelectedType.ParaType;
+                parameter.FamType =string.Empty;
+            }
+            WeakReferenceMessenger.Default.Send(new ValueChangedMessage<Param>(parameter),"新参数");
+        }
+
+        private bool CanAddNew()
+        {
+            return allowNew;
+        }
+
         /// <summary>
         /// 载入所有参数的信息
         /// </summary>
@@ -179,14 +221,33 @@ namespace Demo01.Models
 
             SelectedType = SelectedRule.TypeList[0];
         }
+
         /// <summary>
         /// 接收工具提示消息
         /// </summary>
         /// <param name="message"></param>
         public void Receive(ValueChangedMessage<string> message)
         {
-            ToolTipInfomation = message.Value;
+            PDes = message.Value;
             paramToolTipView.Hide();
+        }
+
+        /// <summary>
+        /// 名字输入框不为空时，改变按钮可用性
+        /// </summary>
+        /// <param name="value"></param>
+        partial void OnPNameChanged(string value)
+        {
+            if (value != null && value != "")
+            {
+                allowNew = true;
+                AddNewParaCommand.NotifyCanExecuteChanged();
+            }
+            else
+            {
+                allowNew = false;
+                AddNewParaCommand.NotifyCanExecuteChanged();
+            }
         }
     }
 }
