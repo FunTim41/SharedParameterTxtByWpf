@@ -33,7 +33,7 @@
             <Button
                 Width="80"
                 Margin="2"
-                Click="Button_Click"
+                Command="{Binding SendSelectedCommand}"
                 Content="取消" />
         </StackPanel>
     </StackPanel>

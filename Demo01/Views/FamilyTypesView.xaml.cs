@@ -36,11 +36,7 @@ namespace Demo01.Views
 
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            
-            this.Close();
-        }
+      
 
     }
 }

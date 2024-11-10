@@ -16,19 +16,23 @@ using CommunityToolkit.Mvvm.Messaging.Messages;
 using Demo01.Models;
 using Demo01.Views;
 using Microsoft.Win32;
+using Xceed.Wpf.Toolkit.Primitives;
 
 namespace Demo01.ViewModels
 {
-    public partial class MainViewModel : ObservableObject,IRecipient<ValueChangedMessage<Param>>
+    public partial class MainViewModel : ObservableObject, IRecipient<ValueChangedMessage<Param>>
     {
+        [ObservableProperty]
+        Param newParam;
+
         public MainViewModel()
         {
             WeakReferenceMessenger.Default.Register(this, "新参数");
-
         }
+
         /// <summary>
         /// 组相关按钮可用性
-        /// </summary>        
+        /// </summary>
         [ObservableProperty]
         bool isGroEn = false;
 
@@ -49,6 +53,7 @@ namespace Demo01.ViewModels
         /// </summary>
         [ObservableProperty]
         string filePath;
+
         /// <summary>
         /// 当前选中的group
         /// </summary>
@@ -57,8 +62,13 @@ namespace Demo01.ViewModels
 
         [ObservableProperty]
         ObservableCollection<ParaGroup> groupList = new();
-        [ObservableProperty]
-        ObservableCollection<Param> paramList = new();
+
+        /// <summary>
+        /// 共享参数合集
+        /// </summary>
+        //[ObservableProperty]
+        //ObservableCollection<Param> paramList = new();
+
         #region 命令
         /// <summary>
         /// 创建新组
@@ -70,29 +80,30 @@ namespace Demo01.ViewModels
             //加入新的组名到ComboBox
             if (newGroupView.ShowDialog() == true)
             {
-                bool isex = false;
+                bool isexist = false;
                 ParaGroup group = new ParaGroup();
                 group.Name = newGroupView.InputBox.Text;
                 foreach (var item in GroupList)
                 {
                     if (item.Name.Equals(group.Name))
                     {
-                        isex = true;
-                        MessageBox.Show("已存在该组");
+                        isexist = true;
+                        MessageBox.Show(
+                            "已存在该组",
+                            "提示",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Warning
+                        );
                     }
                 }
                 group.Id = GroupList.Count + 1;
-                if (!isex)
+                if (!isexist)
                 {
                     GroupList.Add(group);
                     SelectedGroup = group;
                 }
-                if (GroupList.Count != 0)
-                {
-                    IsGroEn = true;
-                }
             }
-
+            isListCountIsZero();
         }
 
         /// <summary>
@@ -103,7 +114,6 @@ namespace Demo01.ViewModels
         {
             ParamPropView PropView = new ParamPropView();
             PropView.ShowDialog();
-           
         }
 
         /// <summary>
@@ -147,7 +157,68 @@ namespace Demo01.ViewModels
         {
             Application.Current.Shutdown();
         }
+        /// <summary>
+        /// 重命名组
+        /// </summary>
+        [RelayCommand]
+        void ReNameGroup()
+        {
+            NewGroupView newGroupView = new NewGroupView();
+            newGroupView.Title = "重命名组";
+            if (newGroupView.ShowDialog() == true)
+            {
+                ParaGroup group = new ParaGroup();
+                group = SelectedGroup;
+                GroupList.Remove(SelectedGroup);
+                group.Name = newGroupView.InputBox.Text;
+                GroupList.Add(group);
 
+                SelectedGroup=group;
+
+            }
+
+        }
+        /// <summary>
+        /// 删除组
+        /// </summary>
+        [RelayCommand]
+        void DeleteGroup()
+        {
+            GroupList.Remove(SelectedGroup);
+            if (GroupList.Count!=0)
+            {
+                SelectedGroup = GroupList[0];
+            }
+            
+        }
+
+        /// <summary>
+        /// 判断list是否为零,零则改变按钮可用性
+        /// </summary>
+        void isListCountIsZero()
+        {
+            if (GroupList.Count != 0)
+            {
+                IsGroEn = true;
+            }
+            else
+            {
+                IsGroEn = false;
+                return;
+            }
+            if (SelectedGroup!=null)
+            {
+                if (SelectedGroup.ParamList.Count != 0)
+                {
+                    IsEn = true;
+                }
+                else
+                {
+                    IsEn = false;
+                }
+            }
+            
+        }
 
         #endregion
         /// <summary>
@@ -168,16 +239,39 @@ namespace Demo01.ViewModels
                 );
             }
         }
+
         /// <summary>
         /// 接收的新参数
         /// </summary>
-        [ObservableProperty]
-        Param newParam;
         public void Receive(ValueChangedMessage<Param> message)
         {
-            NewParam= message.Value;
-            NewParam.GroupId= SelectedGroup.Id;
-            SelectedGroup.ParamList.Add(NewParam);
+            NewParam = message.Value;
+            NewParam.GroupId = SelectedGroup.Id;
+            bool isExist = false;
+            foreach (var item in GroupList)
+            {
+                foreach (var param in item.ParamList)
+                {
+                    if (NewParam.Name == param.Name)
+                    {
+                        isExist = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!isExist)
+            {
+                SelectedGroup.ParamList.Add(NewParam);
+            }
+            else
+                MessageBox.Show(
+                    "已存在该参数",
+                    "提示",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning
+                );
+            isListCountIsZero();
         }
     }
 }
