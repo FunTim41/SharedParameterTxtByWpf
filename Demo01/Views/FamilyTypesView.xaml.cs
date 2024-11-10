@@ -22,12 +22,12 @@ namespace Demo01.Views
     /// </summary>
     public partial class FamilyTypesView : Window
     {
-       public  MyType famTypeInfo; FamTypeViewModel famType;
+       
         public FamilyTypesView()
         {
-            famType = new FamTypeViewModel();
+            
             InitializeComponent();
-            this.DataContext = famType;
+            this.DataContext = new FamTypeViewModel(); 
             
         }
 
@@ -37,10 +37,5 @@ namespace Demo01.Views
             this.Close();
         }
 
-        private void okBtn_Click(object sender, RoutedEventArgs e)
-        {
-            famTypeInfo = famType.SelectedCate;
-            this.DialogResult=true; this.Close();
-        }
     }
 }

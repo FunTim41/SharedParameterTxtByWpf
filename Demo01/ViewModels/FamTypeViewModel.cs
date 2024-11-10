@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Messaging.Messages;
 using Demo01.Models;
 using Demo01.XmlHelp;
 using System;
@@ -17,8 +19,11 @@ namespace Demo01.ViewModels
         List<MyType> famTypes = new();
         [ObservableProperty]
         MyType selectedCate = new();
-
-
+        [RelayCommand]
+        void SendSelected()
+        {
+            WeakReferenceMessenger.Default.Send(new ValueChangedMessage<MyType>(SelectedCate), "族类型");
+        }
 
         public FamTypeViewModel()
         {

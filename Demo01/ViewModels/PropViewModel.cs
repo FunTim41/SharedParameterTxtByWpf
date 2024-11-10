@@ -16,7 +16,7 @@ using Xceed.Wpf.Toolkit;
 
 namespace Demo01.Models
 {
-    partial class PropViewModel : ObservableRecipient, IRecipient<ValueChangedMessage<string>>
+    partial class PropViewModel : ObservableRecipient, IRecipient<ValueChangedMessage<string>>, IRecipient<ValueChangedMessage<MyType>>
     {
         /// <summary>
         /// 确认，按钮可用性
@@ -26,10 +26,11 @@ namespace Demo01.Models
         public PropViewModel()
         {
             IsActive = true;
-            WeakReferenceMessenger.Default.Register(this, "工具提示消息");
+            WeakReferenceMessenger.Default.Register<ValueChangedMessage<string> ,string>(this, "工具提示消息");
+            WeakReferenceMessenger.Default.Register<ValueChangedMessage<MyType>, string>(this, "族类型");
             LoadparaInfo();
         }
-
+        #region 参数属性
         /// <summary>
         /// 新参数
         /// </summary>
@@ -39,6 +40,7 @@ namespace Demo01.Models
         /// 输入的共享参数名称
         /// </summary>
         [ObservableProperty]
+        [NotifyPropertyChangedRecipients]
         string pName;
 
         /// <summary>
@@ -78,7 +80,7 @@ namespace Demo01.Models
         /// </summary>
         [ObservableProperty]
         bool pModify;
-
+        #endregion
         /// <summary>
         /// 规程列表
         /// </summary>
@@ -138,11 +140,12 @@ namespace Demo01.Models
             if (SelectedType.Name == "<族类型...>")
             {
                 FamilyTypesView familyTypesView = new FamilyTypesView();
-                if (familyTypesView.ShowDialog() == true)
+                familyTypesView.ShowDialog();
+                if (typeFromFamily != null)
                 {
-                    SelectedRule.TypeList.Add(familyTypesView.famTypeInfo);
-                    SelectedType = familyTypesView.famTypeInfo;
-                    TypeFromFamily = familyTypesView.famTypeInfo.Name;
+                    SelectedRule.TypeList.Add(typeFromFamily);
+                    SelectedType = typeFromFamily;
+                    TypeFromFamily = typeFromFamily.Name;
                 }
             }
         }
@@ -231,14 +234,24 @@ namespace Demo01.Models
             PDes = message.Value;
             paramToolTipView.Hide();
         }
-
+        MyType typeFromFamily;
+        /// <summary>
+        /// 接收族类型消息
+        /// </summary>
+        /// <param name="message"></param>
+        public void Receive(ValueChangedMessage<MyType> message)
+        {
+            typeFromFamily= message.Value;
+        }
         /// <summary>
         /// 名字输入框不为空时，改变按钮可用性
         /// </summary>
         /// <param name="value"></param>
-        partial void OnPNameChanged(string value)
+        [RelayCommand]
+         void PNameChange()
         {
-            if (value != null && value != "")
+
+            if (PName != null && PName != "")
             {
                 allowNew = true;
                 AddNewParaCommand.NotifyCanExecuteChanged();
