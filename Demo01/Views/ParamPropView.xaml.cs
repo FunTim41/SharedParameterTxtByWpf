@@ -1,4 +1,5 @@
-﻿using Demo01.Models;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using Demo01.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,18 +29,11 @@ namespace Demo01.Views
             
             InitializeComponent();
             this.DataContext = new PropViewModel();
-
+            WeakReferenceMessenger.Default.Register<CloseWindowMessage,string>(this, "关闭属性窗口", (r, m) =>
+            {
+                this.Close();
+            });
         }
-
-       
-
-       
-
-
-
-       
-
-      
 
        
     }

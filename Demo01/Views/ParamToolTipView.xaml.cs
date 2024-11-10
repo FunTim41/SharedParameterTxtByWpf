@@ -1,4 +1,6 @@
-﻿using Demo01.ViewModels;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using Demo01.Models;
+using Demo01.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +34,10 @@ namespace Demo01.Views
                     this.DragMove();
                 }
             };
+            WeakReferenceMessenger.Default.Register<CloseWindowMessage, string>(this, "关闭属性描述窗口", (r, m) =>
+            {
+                this.Hide();
+            });
         }
         public static ParamToolTipView GetInstance
         {

@@ -23,6 +23,7 @@ namespace Demo01.ViewModels
         void SendSelected()
         {
             WeakReferenceMessenger.Default.Send(new ValueChangedMessage<MyType>(SelectedCate), "族类型");
+            WeakReferenceMessenger.Default.Send(new CloseWindowMessage(), "关闭族类型窗口");
         }
 
         public FamTypeViewModel()

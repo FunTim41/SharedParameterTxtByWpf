@@ -28,7 +28,7 @@
                 x:Name="okBtn"
                 Width="80"
                 Margin="2"
-               Command="{Binding SendSelectedCommand}"
+                Command="{Binding SendSelectedCommand}"
                 Content="确定" />
             <Button
                 Width="80"

@@ -1,4 +1,5 @@
-﻿using Demo01.Models;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using Demo01.Models;
 using Demo01.ViewModels;
 using Demo01.XmlHelp;
 using System;
@@ -27,8 +28,12 @@ namespace Demo01.Views
         {
             
             InitializeComponent();
-            this.DataContext = new FamTypeViewModel(); 
-            
+            this.DataContext = new FamTypeViewModel();
+            WeakReferenceMessenger.Default.Register<CloseWindowMessage, string>(this, "关闭族类型窗口", (r, m) =>
+            {
+                this.Close();
+            });
+
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

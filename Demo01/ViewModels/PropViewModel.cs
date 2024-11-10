@@ -189,6 +189,9 @@ namespace Demo01.Models
                 parameter.FamType =string.Empty;
             }
             WeakReferenceMessenger.Default.Send(new ValueChangedMessage<Param>(parameter),"新参数");
+            WeakReferenceMessenger.Default.Send(new CloseWindowMessage(),"关闭属性窗口");
+
+
         }
 
         private bool CanAddNew()
