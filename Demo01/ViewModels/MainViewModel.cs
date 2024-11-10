@@ -21,14 +21,14 @@ namespace Demo01.ViewModels
     {
         public MainViewModel()
         {
-            
-            
+
+
         }
         /// <summary>
         /// 组相关按钮可用性
         /// </summary>        
         [ObservableProperty]
-        bool isGroEn =false;
+        bool isGroEn = false;
 
         /// <summary>
         /// 参数相关按钮可用性
@@ -83,14 +83,14 @@ namespace Demo01.ViewModels
                 if (!isex)
                 {
                     GroupList.Add(group);
-                    SelectedGroup=group;
+                    SelectedGroup = group;
                 }
-                if (GroupList.Count!=0)
+                if (GroupList.Count != 0)
                 {
                     IsGroEn = true;
                 }
             }
-            
+
         }
 
         /// <summary>
@@ -101,10 +101,7 @@ namespace Demo01.ViewModels
         {
             ParamPropView PropView = new ParamPropView();
             PropView.ShowDialog();
-            if (PropView.ShowDialog() == true) {
-                SelectedGroup.ParamList.Add( PropView.Parameter);
-                PropView.Parameter.GroupId = SelectedGroup.Id;
-            }
+           
         }
 
         /// <summary>

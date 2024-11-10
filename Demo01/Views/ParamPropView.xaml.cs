@@ -22,47 +22,24 @@ namespace Demo01.Views
     /// </summary>
     public partial class ParamPropView : Window
     {
-        PropViewModel propViewModel;
-       public  Param Parameter=new();
+       
         public ParamPropView()
         {
-           propViewModel=  new PropViewModel();
+            
             InitializeComponent();
-            this.DataContext = propViewModel;
-            
+            this.DataContext = new PropViewModel();
+
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            ParamToolTipView paramToolTipView = new ParamToolTipView();
-            if (paramToolTipView.ShowDialog() == true)
-            {
-                this.tipBlock.Text = paramToolTipView.tip.Text;
-            }
-        }
+       
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            
-            this.Close();
-        }
+       
 
 
 
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            okBtn.IsEnabled = false;
-            if (propNameBox.Text != null && propNameBox.Text != "")
-            {
-                okBtn.IsEnabled = true;
-            }
-        }
+       
 
-        private void okBtn_Click(object sender, RoutedEventArgs e)
-        {
-            this.Parameter = propViewModel.Parameter;
-            this.Close();
-        }
+      
 
        
     }

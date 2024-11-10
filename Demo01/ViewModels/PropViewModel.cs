@@ -8,16 +8,20 @@ using System.Threading.Tasks;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Messaging.Messages;
 using Demo01.Views;
 using Demo01.XmlHelp;
 using Xceed.Wpf.Toolkit;
 
 namespace Demo01.Models
 {
-    partial class PropViewModel : ObservableObject
+    partial class PropViewModel : ObservableRecipient, IRecipient<ValueChangedMessage<string>>
     {
         public PropViewModel()
         {
+            IsActive = true; 
+            WeakReferenceMessenger.Default.Register(this, "工具提示消息");
             LoadparaInfo();
         }
 
@@ -54,9 +58,9 @@ namespace Demo01.Models
         /// </summary>
         [ObservableProperty]
         string pDes;
-       /// <summary>
-       /// revit用户是否能修改
-       /// </summary>
+        /// <summary>
+        /// revit用户是否能修改
+        /// </summary>
         [ObservableProperty]
         bool pModify;
 
@@ -76,7 +80,11 @@ namespace Demo01.Models
         /// 来自族类型的参数类型的名字
         /// </summary>
         string TypeFromFamily = string.Empty;
-
+        /// <summary>
+        /// 工具提示说明
+        /// </summary>
+        [ObservableProperty]
+        string toolTipInfomation;
         [RelayCommand]
         void SetParamProp()
         {
@@ -100,7 +108,7 @@ namespace Demo01.Models
             {
                 SelectedType = SelectedRule.TypeList[0];
             }
-           //移除上一个选中的族类型
+            //移除上一个选中的族类型
             if (
                 TypeFromFamily != SelectedType.Name
                 && TypeFromFamily != ""
@@ -132,9 +140,20 @@ namespace Demo01.Models
                 }
             }
         }
-       /// <summary>
-       /// 载入所有参数的信息
-       /// </summary>
+        ParamToolTipView paramToolTipView;
+        /// <summary>
+        /// 打开提示编辑窗口
+        /// </summary>
+        [RelayCommand]
+        void LoadEdit()
+        {
+             paramToolTipView=ParamToolTipView.GetInstance;
+                     paramToolTipView.ShowDialog();
+            
+        }
+        /// <summary>
+        /// 载入所有参数的信息
+        /// </summary>
         void LoadparaInfo()
         {
             TypeList myTypes = XmlUtil.DeserializeFromXml<TypeList>(
@@ -145,7 +164,7 @@ namespace Demo01.Models
             {
                 Rule rule = new Rule();
                 rule.Name = item.Key;
-                var list= new List<MyType>();
+                var list = new List<MyType>();
                 foreach (var i in item)
                 {
                     list.Add(i);
@@ -159,6 +178,15 @@ namespace Demo01.Models
             SelectedRule = RuleList[0];
 
             SelectedType = SelectedRule.TypeList[0];
+        }
+        /// <summary>
+        /// 接收工具提示消息
+        /// </summary>
+        /// <param name="message"></param>
+        public void Receive(ValueChangedMessage<string> message)
+        {
+            ToolTipInfomation = message.Value;
+            paramToolTipView.Hide();
         }
     }
 }

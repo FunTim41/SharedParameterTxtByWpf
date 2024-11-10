@@ -7,9 +7,10 @@
     xmlns:local="clr-namespace:Demo01.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2"
-    Title="参数属性"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        Title="参数属性"
     Width="365"
-    Height="290"
+    Height="300"
     Background="#f0f0f0"
     ResizeMode="NoResize"
     Topmost="True"
@@ -24,7 +25,7 @@
             Height="24"
             Margin="2"
             Text="{Binding PName}"
-            TextChanged="TextBox_TextChanged" />
+             />
         <TextBlock Margin="2" Text="规程：" />
         <ComboBox
             Margin="2"
@@ -53,31 +54,30 @@
                         Text="{Binding SelectedType.Name}" />
         </StackPanel>
         <TextBlock Margin="2" Text="工具提示说明：" />
-        <TextBlock
-            x:Name="tipBlock"
-            Width="300"
-            Margin="2"
+        <xctk:WatermarkTextBox   Background="Transparent" BorderThickness="0"        
+            Width="300" Height="23" 
+            Margin="2" TextWrapping="Wrap"
             HorizontalAlignment="Left"
-            Text="无工具提示说明。编辑此参数以编写自定义工具提示。自定义工具提示限为 250 个字符。"
-            TextTrimming="CharacterEllipsis" />
+            Text="{Binding ToolTipInfomation}"
+                Watermark="&lt;无工具提示说明。编辑此参数以编写自定义工具提示。自定义工具提示限为 250 个字符。&lt;" />
         <Button
             Width="100"
             Margin="2"
             HorizontalAlignment="Left"
-            Click="Button_Click"
+           Command="{Binding LoadEditCommand }"
             Content="编辑工具提示" />
         <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
             <Button
                 x:Name="okBtn"
                 Width="80"
                 Margin="2"
-                Click="okBtn_Click"
+               
                 Content="确定"
                 IsEnabled="False" />
             <Button
                 Width="80"
                 Margin="2"
-                Click="Button_Click_1"
+                
                 Content="取消" />
         </StackPanel>
     </StackPanel>

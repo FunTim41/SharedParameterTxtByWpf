@@ -5,33 +5,48 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Demo01.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     Title="编辑工具提示"
-    Width="500"
+    Width="550"
     Height="190"
     ResizeMode="NoResize"
     Topmost="True"
     WindowStartupLocation="CenterScreen"
-    WindowStyle="ToolWindow"
+    WindowStyle="None"
     mc:Ignorable="d">
-    <StackPanel Background="#f0f0f0">
-        <TextBox
-            x:Name="tip"
-            Height="100"
-            Margin="20,10"
-            VerticalAlignment="Top"
-            Text="无工具提示说明。编辑此参数以编写自定义工具提示。自定义工具提示限为 250 个字符。"
-            TextWrapping="Wrap" />
-        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-            <Button
-                Width="80"
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto " />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <StackPanel x:Name="TitleBar">
+            <TextBlock
                 Margin="5"
-                Click="Button_Click"
-                Content="确定" />
-            <Button
-                Width="80"
-                Margin="5"
-                Click="Button_Click_1"
-                Content="取消" />
+                FontSize="15"
+                Text="编辑工具提示" />
         </StackPanel>
-    </StackPanel>
+        <StackPanel Grid.Row="1" Background="#f0f0f0">
+            <xctk:WatermarkTextBox
+                Width="510"
+                Height="110"
+                Margin="20,10"
+                VerticalAlignment="Top"
+                Text="{Binding ToolTip}"
+                TextWrapping="Wrap"
+                Watermark="&lt;无工具提示说明。编辑此参数以编写自定义工具提示。自定义工具提示限为 250 个字符。&gt;" />
+
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                <Button
+                    Width="80"
+                    Margin="5"
+                    Command="{Binding SendToolTipCommand}"
+                    Content="确定" />
+                <Button
+                    Width="80"
+                    Margin="5"
+                    Click="Button_Click_1"
+                    Content="取消" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
 </Window>
