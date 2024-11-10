@@ -33,5 +33,17 @@ namespace Demo01
                 this.Close();
             };
         }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            // 有隐藏子窗口，在此处关闭它们
+            foreach (Window window in Application.Current.Windows)
+            {
+                if (window != this) // 排除主窗口
+                {
+                    window.Close(); // 关闭其他窗口
+                }
+            }
+        }
     }
 }

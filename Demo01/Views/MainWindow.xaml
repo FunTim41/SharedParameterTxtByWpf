@@ -10,7 +10,7 @@
     Width="800"
     Height="485"
     ResizeMode="NoResize"
-    Topmost="True"
+    Topmost="True" Closing="Window_Closing"
     WindowStartupLocation="CenterScreen"
     WindowStyle="None"
     mc:Ignorable="d">
@@ -116,7 +116,7 @@
                                 Command="{Binding OpenParamPropViewCommand}"
                                 Content="新建"
                                 IsEnabled="{Binding IsGroEn}" />
-                            <Button
+                            <Button Command="{Binding ChangeParamCommand}"
                                 Margin="5"
                                 Content="属性"
                                 IsEnabled="{Binding IsEn}" />

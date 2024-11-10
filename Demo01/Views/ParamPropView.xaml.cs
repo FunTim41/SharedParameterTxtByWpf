@@ -1,6 +1,4 @@
-﻿using CommunityToolkit.Mvvm.Messaging;
-using Demo01.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Printing;
@@ -14,30 +12,48 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using CommunityToolkit.Mvvm.Messaging;
+using Demo01.Models;
 
 namespace Demo01.Views
 {
-   
     /// <summary>
     /// ParamPropView.xaml 的交互逻辑
     /// </summary>
     public partial class ParamPropView : Window
     {
-       
-        public ParamPropView()
+        private static ParamPropView paramPropView;
+
+        protected ParamPropView()
         {
-            
             InitializeComponent();
             this.DataContext = new PropViewModel();
-            WeakReferenceMessenger.Default.Register<CloseWindowMessage,string>(this, "关闭属性窗口", (r, m) =>
+            WeakReferenceMessenger.Default.Register<CloseWindowMessage, string>(
+                this,
+                "关闭属性窗口",
+                (r, m) =>
+                {
+                    this.Hide();
+                }
+            );
+        }
+
+        public static ParamPropView GetInstance
+        {
+            get
             {
-                this.Close();
-            });
+                if (paramPropView == null)
+                {
+                    paramPropView = new ParamPropView();
+                    return paramPropView;
+                }
+                return paramPropView;
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            this.Hide();
         }
     }
 }

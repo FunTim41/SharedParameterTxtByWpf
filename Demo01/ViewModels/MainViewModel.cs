@@ -20,15 +20,24 @@ using Xceed.Wpf.Toolkit.Primitives;
 
 namespace Demo01.ViewModels
 {
-    public partial class MainViewModel : ObservableObject, IRecipient<ValueChangedMessage<Param>>, IRecipient<ValueChangedMessage<ParaGroup>>
+    public partial class MainViewModel
+        : ObservableObject,
+            IRecipient<ValueChangedMessage<Param>>,
+            IRecipient<ValueChangedMessage<ParaGroup>>
     {
         [ObservableProperty]
         Param newParam;
 
         public MainViewModel()
         {
-            WeakReferenceMessenger.Default.Register< ValueChangedMessage<Param>,string>(this, "新参数");
-            WeakReferenceMessenger.Default.Register<ValueChangedMessage<ParaGroup>, string>(this, "指定组");
+            WeakReferenceMessenger.Default.Register<ValueChangedMessage<Param>, string>(
+                this,
+                "新参数"
+            );
+            WeakReferenceMessenger.Default.Register<ValueChangedMessage<ParaGroup>, string>(
+                this,
+                "指定组"
+            );
         }
 
         /// <summary>
@@ -71,6 +80,7 @@ namespace Demo01.ViewModels
         //ObservableCollection<Param> paramList = new();
         [ObservableProperty]
         Param selectedPara;
+
         #region 命令
         /// <summary>
         /// 创建新组
@@ -95,19 +105,18 @@ namespace Demo01.ViewModels
                             "提示",
                             MessageBoxButton.OK,
                             MessageBoxImage.Warning
-                        );return;
+                        );
+                        return;
                     }
                 }
-                if (GroupList.Count!=0)
-              
+                if (GroupList.Count != 0)
                 {
                     group.Id = GroupList.Last().Id + 1;
                 }
-                else 
+                else
                 {
-
                     group.Id = 1;
-                }  
+                }
                 if (!isexist)
                 {
                     GroupList.Add(group);
@@ -123,7 +132,7 @@ namespace Demo01.ViewModels
         [RelayCommand]
         void OpenParamPropView()
         {
-            ParamPropView PropView = new ParamPropView();
+            ParamPropView PropView = ParamPropView.GetInstance;
             PropView.ShowDialog();
         }
 
@@ -168,6 +177,7 @@ namespace Demo01.ViewModels
         {
             Application.Current.Shutdown();
         }
+
         /// <summary>
         /// 重命名组
         /// </summary>
@@ -184,11 +194,10 @@ namespace Demo01.ViewModels
                 group.Name = newGroupView.InputBox.Text;
                 GroupList.Add(group);
 
-                SelectedGroup=group;
-
+                SelectedGroup = group;
             }
-
         }
+
         /// <summary>
         /// 删除组
         /// </summary>
@@ -196,12 +205,13 @@ namespace Demo01.ViewModels
         void DeleteGroup()
         {
             GroupList.Remove(SelectedGroup);
-            if (GroupList.Count!=0)
+            if (GroupList.Count != 0)
             {
                 SelectedGroup = GroupList[0];
             }
             isListCountIsZero();
         }
+
         /// <summary>
         /// 删除共享参数
         /// </summary>
@@ -209,22 +219,39 @@ namespace Demo01.ViewModels
         void DeletePara()
         {
             SelectedGroup.ParamList.Remove(SelectedPara);
-            if (SelectedGroup.ParamList.Count!=0)
+            if (SelectedGroup.ParamList.Count != 0)
             {
                 SelectedPara = SelectedGroup.ParamList.Last();
             }
             isListCountIsZero();
         }
+
         /// <summary>
         /// 移动共享参数到新组
         /// </summary>
         [RelayCommand]
         void MovePara()
         {
-            GroupChooseView groupChooseView= new GroupChooseView();
-            WeakReferenceMessenger.Default.Send(new ValueChangedMessage<ObservableCollection<ParaGroup>>(GroupList), "现有组");
+            GroupChooseView groupChooseView = new GroupChooseView();
+            WeakReferenceMessenger.Default.Send(
+                new ValueChangedMessage<ObservableCollection<ParaGroup>>(GroupList),
+                "现有组"
+            );
             groupChooseView.ShowDialog();
-           
+        }
+
+        /// <summary>
+        /// 修改参数属性
+        /// </summary>
+        [RelayCommand]
+        void ChangeParam()
+        {
+            ParamPropView paramPropView = ParamPropView.GetInstance;
+            WeakReferenceMessenger.Default.Send(
+                new ValueChangedMessage<Param>(SelectedPara),
+                "修改属性"
+            );
+            paramPropView.ShowDialog();
         }
 
         /// <summary>
@@ -241,7 +268,7 @@ namespace Demo01.ViewModels
                 IsGroEn = false;
                 return;
             }
-            if (SelectedGroup!=null)
+            if (SelectedGroup != null)
             {
                 if (SelectedGroup.ParamList.Count != 0)
                 {
@@ -252,19 +279,19 @@ namespace Demo01.ViewModels
                     IsEn = false;
                 }
             }
-            
         }
+
         /// <summary>
-        /// 组选择改变
+        /// 组选择改变，刷新当前选中的参数
         /// </summary>
         [RelayCommand]
         void SelectedChanged()
         {
-            if (SelectedGroup.ParamList.Count!=0)
+            if (SelectedGroup.ParamList.Count != 0)
             {
                 SelectedPara = SelectedGroup.ParamList[0];
             }
-            
+
             isListCountIsZero();
         }
         #endregion
@@ -313,17 +340,25 @@ namespace Demo01.ViewModels
                 isListCountIsZero();
                 SelectedPara = NewParam;
             }
-            else
-            {
-                MessageBox.Show(
-                    "已存在该参数",
-                    "提示",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning
-                );
+            else{
+              MessageBoxResult messageBoxResult=  MessageBox.Show(
+                        "是否修改",
+                        "提示",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Warning
+                    );
+                if (messageBoxResult==MessageBoxResult.Yes)
+                {
+                    var list = SelectedGroup.ParamList.Where(x => x.Name == NewParam.Name).ToList();
+                    list.ForEach(t=> SelectedGroup.ParamList.Remove(t)); 
+                    SelectedGroup.ParamList.Add(NewParam);
+                    SelectedPara = NewParam;
+                }
+
+
             }
-            
         }
+
         /// <summary>
         /// 接收指定组
         /// </summary>
@@ -331,7 +366,7 @@ namespace Demo01.ViewModels
         /// <exception cref="NotImplementedException"></exception>
         public void Receive(ValueChangedMessage<ParaGroup> message)
         {
-            ParaGroup paraGroup= message.Value;
+            ParaGroup paraGroup = message.Value;
             Param param = SelectedPara;
             if (param != null)
             {
@@ -349,6 +384,7 @@ namespace Demo01.ViewModels
                     SelectedPara = SelectedGroup.ParamList[0];
                 }
             }
+            isListCountIsZero();
         }
     }
 }

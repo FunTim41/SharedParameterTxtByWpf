@@ -13,11 +13,18 @@
     WindowStyle="ToolWindow"
     mc:Ignorable="d">
     <StackPanel Margin="10">
-        <ComboBox 
-            Height="30" VerticalContentAlignment="Center"
-            SelectedItem="{Binding SelectedGroup}"
+        <ComboBox
+            Height="30"
+            VerticalContentAlignment="Center"
             DisplayMemberPath="Name"
-            ItemsSource="{Binding GroupList}" />
-        <Button Command="{Binding SendGroupCommand}" HorizontalAlignment="Right" Margin="0 5 5 10" Height="25" Width="80" Content="确认"/>
+            ItemsSource="{Binding GroupList}"
+            SelectedItem="{Binding SelectedGroup}" />
+        <Button
+            Width="80"
+            Height="25"
+            Margin="0,5,5,10"
+            HorizontalAlignment="Right"
+            Command="{Binding SendGroupCommand}"
+            Content="确认" />
     </StackPanel>
 </Window>

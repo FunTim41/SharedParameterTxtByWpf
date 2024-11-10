@@ -14,7 +14,9 @@ using System.Threading.Tasks;
 namespace Demo01.ViewModels
 {
     partial class FamTypeViewModel : ObservableObject
-    {
+    {/// <summary>
+    /// 族类型
+    /// </summary>
         [ObservableProperty]
         List<MyType> famTypes = new();
         [ObservableProperty]
@@ -23,12 +25,14 @@ namespace Demo01.ViewModels
         void SendSelected()
         {
             WeakReferenceMessenger.Default.Send(new ValueChangedMessage<MyType>(SelectedCate), "族类型");
-            WeakReferenceMessenger.Default.Send(new CloseWindowMessage(), "关闭族类型窗口");
+             WeakReferenceMessenger.Default.Send(new CloseWindowMessage(), "关闭族类型窗口");
         }
 
         public FamTypeViewModel()
         {
             LoadFamTypeInfo();
+            WeakReferenceMessenger.Default.Send(new ValueChangedMessage<List<MyType>>(FamTypes), "族合集");
+
         }
 
 
