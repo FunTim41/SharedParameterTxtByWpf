@@ -25,9 +25,6 @@ namespace Demo01.ViewModels
             IRecipient<ValueChangedMessage<Param>>,
             IRecipient<ValueChangedMessage<ParaGroup>>
     {
-        [ObservableProperty]
-        Param newParam;
-
         public MainViewModel()
         {
             WeakReferenceMessenger.Default.Register<ValueChangedMessage<Param>, string>(
@@ -39,6 +36,10 @@ namespace Demo01.ViewModels
                 "指定组"
             );
         }
+
+        #region 属性
+        [ObservableProperty]
+        Param newParam;
 
         /// <summary>
         /// 组相关按钮可用性
@@ -80,7 +81,7 @@ namespace Demo01.ViewModels
         //ObservableCollection<Param> paramList = new();
         [ObservableProperty]
         Param selectedPara;
-
+        #endregion
         #region 命令
         /// <summary>
         /// 创建新组
@@ -133,6 +134,7 @@ namespace Demo01.ViewModels
         void OpenParamPropView()
         {
             ParamPropView PropView = ParamPropView.GetInstance;
+            PropView.paramName.Text = string.Empty;
             PropView.ShowDialog();
         }
 
@@ -198,6 +200,7 @@ namespace Demo01.ViewModels
                 }
                 SelectedGroup = GroupList[0];
                 SelectedPara = SelectedGroup.ParamList[0];
+                isListCountIsZero();
             }
             catch (Exception ex)
             {
@@ -224,7 +227,61 @@ namespace Demo01.ViewModels
                 file.Close();
 
                 FilePath = saveFile.FileName;
-                WriteIntoFile();
+                GroupList.Clear();
+                isListCountIsZero();
+            }
+        }
+
+        /// <summary>
+        /// 文件初始化
+        /// </summary>
+        private void WriteIntoFile()
+        {
+            // 使用 StreamWriter 写入文件
+            using (StreamWriter writer = new StreamWriter(FilePath, append: false)) // append: false 表示覆盖文件
+            {
+                writer.WriteLine("# This is a Revit shared parameter file.");
+                writer.WriteLine("# Do not edit manually.");
+                writer.WriteLine("*META\tVERSION\tMINVERSION");
+                writer.WriteLine("META\t2\t1");
+                writer.WriteLine("*GROUP\tID\tNAME");
+                writer.WriteLine(
+                    "*PARAM\tGUID\tNAME\tDATATYPE\tDATACATEGORY\tGROUP\tVISIBLE\tDESCRIPTION\tUSERMODIFIABLE"
+                );
+            }
+        }
+
+        /// <summary>
+        /// 保存
+        /// </summary>
+        [RelayCommand]
+        void SaveFile()
+        {
+            // 使用 StreamWriter 写入文件
+            using (StreamWriter writer = new StreamWriter(FilePath, append: false)) // append: false 表示覆盖文件
+            {
+                writer.WriteLine("# This is a Revit shared parameter file.");
+                writer.WriteLine("# Do not edit manually.");
+                writer.WriteLine("*META\tVERSION\tMINVERSION");
+                writer.WriteLine("META\t2\t1");
+                writer.WriteLine("*GROUP\tID\tNAME");
+                foreach (var group in GroupList)
+                {
+                    writer.WriteLine($"GROUP\t{group.Id}\t{group.Name}");
+                }
+                writer.WriteLine(
+                    "*PARAM\tGUID\tNAME\tDATATYPE\tDATACATEGORY\tGROUP\tVISIBLE\tDESCRIPTION\tUSERMODIFIABLE"
+                );
+                foreach (var group in GroupList)
+                {
+                    foreach (var param in group.ParamList)
+                    {
+                        writer.WriteLine(
+                            $"PARAM\t{param.Guid}\t{param.Name}\t{param.ParamType}\t{param.FamType}\t{param.GroupId}\t{param.isVisible}\t{param.Describe}\t{param.isUserCanModify}"
+                        );
+                    }
+                }
+                MessageBox.Show("保存成功","提示",MessageBoxButton.OK,MessageBoxImage.Information);
             }
         }
 
@@ -322,6 +379,7 @@ namespace Demo01.ViewModels
             else
             {
                 IsGroEn = false;
+                IsEn = false;
                 return;
             }
             if (SelectedGroup != null)
@@ -355,25 +413,8 @@ namespace Demo01.ViewModels
             isListCountIsZero();
         }
         #endregion
-        /// <summary>
-        /// 文件初始化
-        /// </summary>
-        private void WriteIntoFile()
-        {
-            // 使用 StreamWriter 写入文件
-            using (StreamWriter writer = new StreamWriter(FilePath, append: false)) // append: false 表示覆盖文件
-            {
-                writer.WriteLine("# This is a Revit shared parameter file.");
-                writer.WriteLine("# Do not edit manually.");
-                writer.WriteLine("*META\tVERSION\tMINVERSION");
-                writer.WriteLine("META\t2\t1");
-                writer.WriteLine("*GROUP\tID\tNAME");
-                writer.WriteLine(
-                    "*PARAM\tGUID\tNAME\tDATATYPE\tDATACATEGORY\tGROUP\tVISIBLE\tDESCRIPTION\tUSERMODIFIABLE"
-                );
-            }
-        }
 
+        #region 接收的消息
         /// <summary>
         /// 接收的新参数
         /// </summary>
@@ -445,5 +486,6 @@ namespace Demo01.ViewModels
             }
             isListCountIsZero();
         }
+        #endregion
     }
 }

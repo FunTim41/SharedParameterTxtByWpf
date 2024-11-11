@@ -31,7 +31,7 @@
 
         <StackPanel Grid.Row="1" Margin="10,5,10,0">
             <TextBlock Margin="2" Text="名称：" />
-            <TextBox
+            <TextBox x:Name="paramName"
                 Height="24"
                 Margin="2"
                 VerticalContentAlignment="Center"

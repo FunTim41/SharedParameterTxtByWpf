@@ -163,8 +163,8 @@
                 <Button
                     Width="100"
                     Height="25"
-                    Margin="5"
-                    Content="确定" />
+                    Margin="5" Command="{Binding SaveFileCommand}"
+                    Content="保存" />
                 <Button
                     Width="100"
                     Height="25"
