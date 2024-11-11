@@ -1,4 +1,5 @@
-﻿using Demo01.Models;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using Demo01.Models;
 using Demo01.ViewModels;
 using Demo01.XmlHelp;
 using System;
@@ -22,25 +23,20 @@ namespace Demo01.Views
     /// </summary>
     public partial class FamilyTypesView : Window
     {
-       public  MyType famTypeInfo; FamTypeViewModel famType;
+       
         public FamilyTypesView()
         {
-            famType = new FamTypeViewModel();
+            
             InitializeComponent();
-            this.DataContext = famType;
-            
+            this.DataContext = new FamTypeViewModel();
+            WeakReferenceMessenger.Default.Register<CloseWindowMessage, string>(this, "关闭族类型窗口", (r, m) =>
+            {
+                this.Close();
+            });
+
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            
-            this.Close();
-        }
+      
 
-        private void okBtn_Click(object sender, RoutedEventArgs e)
-        {
-            famTypeInfo = famType.SelectedCate;
-            this.DialogResult=true; this.Close();
-        }
     }
 }

@@ -7,78 +7,100 @@
     xmlns:local="clr-namespace:Demo01.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2"
-    Title="参数属性"
+    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     Width="365"
-    Height="290"
+    Height="300"
     Background="#f0f0f0"
     ResizeMode="NoResize"
     Topmost="True"
     WindowStartupLocation="CenterScreen"
-    WindowStyle="ToolWindow"
+    WindowStyle="None"
     mc:Ignorable="d">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height=" auto" />
+            <RowDefinition Height="1*" />
 
-    <StackPanel Margin="10,5,10,0">
-        <TextBlock Margin="2" Text="名称：" />
-        <TextBox
-            x:Name="propNameBox"
-            Height="24"
-            Margin="2"
-            Text="{Binding PName}"
-            TextChanged="TextBox_TextChanged" />
-        <TextBlock Margin="2" Text="规程：" />
-        <ComboBox
-            Margin="2"
-            DisplayMemberPath="Name"
-            ItemsSource="{Binding RuleList}"
-            SelectedItem="{Binding SelectedRule}" />
-        <TextBlock Margin="2" Text="参数类型：" />
-        <ComboBox
-            Margin="2"
-            DisplayMemberPath="Name"
-            ItemsSource="{Binding SelectedRule.TypeList}"
-            SelectedItem="{Binding SelectedType}">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="SelectionChanged">
-                    <i:InvokeCommandAction Command="{Binding SelecrFamilyTypeCommand}" />
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-        </ComboBox>
+        </Grid.RowDefinitions>
+        <StackPanel x:Name="TitleBar" Background="White">
+            <TextBlock
+                Margin="5"
+                FontSize="16"
+                Text="参数属性" />
+        </StackPanel>
 
-        <StackPanel Margin="2" Orientation="Horizontal">
-            <CheckBox Content="是否可见" />
-            <CheckBox Margin="15,0,0,0" Content="是否可修改" />
-            <TextBlock 
-                        Text="{Binding SelectedRule.Name}" />
-                <TextBlock
-                        Text="{Binding SelectedType.Name}" />
-        </StackPanel>
-        <TextBlock Margin="2" Text="工具提示说明：" />
-        <TextBlock
-            x:Name="tipBlock"
-            Width="300"
-            Margin="2"
-            HorizontalAlignment="Left"
-            Text="无工具提示说明。编辑此参数以编写自定义工具提示。自定义工具提示限为 250 个字符。"
-            TextTrimming="CharacterEllipsis" />
-        <Button
-            Width="100"
-            Margin="2"
-            HorizontalAlignment="Left"
-            Click="Button_Click"
-            Content="编辑工具提示" />
-        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-            <Button
-                x:Name="okBtn"
-                Width="80"
+        <StackPanel Grid.Row="1" Margin="10,5,10,0">
+            <TextBlock Margin="2" Text="名称：" />
+            <TextBox x:Name="paramName"
+                Height="24"
                 Margin="2"
-                Click="okBtn_Click"
-                Content="确定"
-                IsEnabled="False" />
-            <Button
-                Width="80"
+                VerticalContentAlignment="Center"
+                Text="{Binding PName, UpdateSourceTrigger=PropertyChanged}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="TextChanged">
+                        <i:InvokeCommandAction Command="{Binding PNameChangeCommand}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </TextBox>
+            <TextBlock Margin="2" Text="规程：" />
+            <ComboBox
                 Margin="2"
-                Click="Button_Click_1"
-                Content="取消" />
+                DisplayMemberPath="Name"
+                ItemsSource="{Binding RuleList}"
+                SelectedItem="{Binding SelectedRule}" />
+            <TextBlock Margin="2" Text="参数类型：" />
+            <ComboBox
+                Margin="2"
+                DisplayMemberPath="Name"
+                ItemsSource="{Binding SelectedRule.TypeList}"
+                SelectedItem="{Binding SelectedType}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <i:InvokeCommandAction Command="{Binding SelecrFamilyTypeCommand}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ComboBox>
+
+            <StackPanel Margin="2" Orientation="Horizontal">
+                <CheckBox Content="是否可见" IsChecked="{Binding PVisible}" />
+                <CheckBox
+                    Margin="15,0,0,0"
+                    Content="是否可修改"
+                    IsChecked="{Binding PModify}" />
+                <TextBlock Text="{Binding SelectedRule.Name}" />
+                <TextBlock Text="{Binding SelectedType.Name}" />
+            </StackPanel>
+            <TextBlock Margin="2" Text="工具提示说明：" />
+            <xctk:WatermarkTextBox
+                Width="300"
+                Height="23"
+                Margin="2"
+                HorizontalAlignment="Left"
+                Background="Transparent"
+                BorderThickness="0"
+                IsReadOnly="True"
+                Text="{Binding PDes}"
+                TextWrapping="Wrap"
+                Watermark="&lt;无工具提示说明。编辑此参数以编写自定义工具提示。自定义工具提示限为 250 个字符。&lt;" />
+            <Button
+                Width="100"
+                Margin="2"
+                HorizontalAlignment="Left"
+                Command="{Binding LoadEditCommand}"
+                Content="编辑工具提示" />
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                <Button
+                    x:Name="okBtn"
+                    Width="80"
+                    Margin="2"
+                    Command="{Binding AddNewParaCommand}"
+                    Content="确定" />
+                <Button
+                    Width="80"
+                    Margin="2"
+                    Command="{Binding HideCommand}"
+                    Content="取消" />
+            </StackPanel>
         </StackPanel>
-    </StackPanel>
+    </Grid>
 </Window>

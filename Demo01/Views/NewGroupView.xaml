@@ -17,8 +17,8 @@
 
     <Grid Background="#f0f0f0">
         <Grid.RowDefinitions>
-            <RowDefinition Height="60" />
-            <RowDefinition Height=" 30" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
 
         <StackPanel Orientation="Horizontal">

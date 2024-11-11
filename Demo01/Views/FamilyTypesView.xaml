@@ -28,12 +28,12 @@
                 x:Name="okBtn"
                 Width="80"
                 Margin="2"
-                Click="okBtn_Click"
+                Command="{Binding SendSelectedCommand}"
                 Content="确定" />
             <Button
                 Width="80"
                 Margin="2"
-                Click="Button_Click"
+                Command="{Binding SendSelectedCommand}"
                 Content="取消" />
         </StackPanel>
     </StackPanel>

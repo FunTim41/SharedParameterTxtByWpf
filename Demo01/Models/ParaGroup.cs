@@ -18,7 +18,7 @@ namespace Demo01.Models
         /// <summary>
         /// 参数列表
         /// </summary>
-        public List<Param> ParamList { get; set; } = new();
+        public ObservableCollection<Param> ParamList { get; set; } = new();
     }
 
     /// <summary>
@@ -26,7 +26,7 @@ namespace Demo01.Models
     /// </summary>
     public class Param
     {
-        public Guid Guid { get; set; }
+        public string Guid { get; set; }
         public string Name { get; set; }
 
         /// <summary>

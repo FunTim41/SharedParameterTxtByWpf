@@ -1,5 +1,4 @@
-﻿using Demo01.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Printing;
@@ -13,55 +12,49 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using CommunityToolkit.Mvvm.Messaging;
+using Demo01.Models;
 
 namespace Demo01.Views
 {
-   
     /// <summary>
     /// ParamPropView.xaml 的交互逻辑
     /// </summary>
     public partial class ParamPropView : Window
     {
-        PropViewModel propViewModel;
-       public  Param Parameter=new();
-        public ParamPropView()
+        private static ParamPropView paramPropView;
+
+        protected ParamPropView()
         {
-           propViewModel=  new PropViewModel();
             InitializeComponent();
-            this.DataContext = propViewModel;
-            
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            ParamToolTipView paramToolTipView = new ParamToolTipView();
-            if (paramToolTipView.ShowDialog() == true)
+            this.DataContext = new PropViewModel(); TitleBar.MouseMove += (s, e) =>
             {
-                this.tipBlock.Text = paramToolTipView.tip.Text;
-            }
+                if (e.LeftButton == MouseButtonState.Pressed)
+                {
+                    this.DragMove();
+                }
+            };
+            WeakReferenceMessenger.Default.Register<CloseWindowMessage, string>(
+                this,
+                "关闭属性窗口",
+                (r, m) =>
+                {
+                    this.Hide();
+                }
+            );
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        public static ParamPropView GetInstance
         {
-            
-            this.Close();
-        }
-
-
-
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            okBtn.IsEnabled = false;
-            if (propNameBox.Text != null && propNameBox.Text != "")
+            get
             {
-                okBtn.IsEnabled = true;
+                if (paramPropView == null)
+                {
+                    paramPropView = new ParamPropView();
+                    return paramPropView;
+                }
+                return paramPropView;
             }
-        }
-
-        private void okBtn_Click(object sender, RoutedEventArgs e)
-        {
-            this.Parameter = propViewModel.Parameter;
-            this.Close();
         }
 
        
