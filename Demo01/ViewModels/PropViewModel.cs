@@ -42,7 +42,8 @@ namespace Demo01.Models
             WeakReferenceMessenger.Default.Register<ValueChangedMessage<Param>, string>(
                 this,
                 "修改属性"
-            ); WeakReferenceMessenger.Default.Register<ValueChangedMessage<List<MyType>>, string>(
+            );
+            WeakReferenceMessenger.Default.Register<ValueChangedMessage<List<MyType>>, string>(
                 this,
                 "族合集"
             );
@@ -118,10 +119,7 @@ namespace Demo01.Models
         [ObservableProperty]
         MyType selectedType = new();
 
-        /// <summary>
-        /// 来自族类型的参数类型的名字
-        /// </summary>
-        string TypeFromFamily = string.Empty;
+        
 
         /// <summary>
         /// 得到最新的参数类型
@@ -133,36 +131,30 @@ namespace Demo01.Models
             {
                 SelectedType = SelectedRule.TypeList[0];
             }
-            //移除上一个选中的族类型
-            if (
-                TypeFromFamily != SelectedType.Name
-                && TypeFromFamily != ""
-                && SelectedRule.Name == "公共"
-            )
-            {
-                MyType type = new MyType();
-
-                foreach (var item in SelectedRule.TypeList)
-                {
-                    if (item.Name == TypeFromFamily)
-                    {
-                        type = item;
-                    }
-                }
-                SelectedRule.TypeList.Remove(type);
-
-                TypeFromFamily = string.Empty;
-            }
+           
             //选择族类型
             if (SelectedType.Name == "<族类型...>")
-            {
+            { //移除上一个选中的族类型
+               
+                
+                    List<MyType> types = new List<MyType>();
+
+                    foreach (var item in SelectedRule.TypeList)
+                    {
+                        if (item.ParaType.Contains("-"))
+                        {
+                            types.Add(item);
+                        }
+                    }
+                    types.ForEach(t => SelectedRule.TypeList.Remove(t));
+                
                 FamilyTypesView familyTypesView = new FamilyTypesView();
                 familyTypesView.ShowDialog();
                 if (typeFromFamily != null)
                 {
                     SelectedRule.TypeList.Add(typeFromFamily);
                     SelectedType = typeFromFamily;
-                    TypeFromFamily = typeFromFamily.Name;
+                   
                 }
             }
         }
@@ -206,6 +198,12 @@ namespace Demo01.Models
                 new ValueChangedMessage<Param>(parameter),
                 "新参数"
             );
+            WeakReferenceMessenger.Default.Send(new CloseWindowMessage(), "关闭属性窗口");
+        }
+
+        [RelayCommand]
+        void Hide()
+        {
             WeakReferenceMessenger.Default.Send(new CloseWindowMessage(), "关闭属性窗口");
         }
 
@@ -290,23 +288,53 @@ namespace Demo01.Models
         {
             Param param = message.Value;
             PName = param.Name;
-            SelectedRule = RuleList.First(t => t.Name == param.Rule);
 
-            if (param.FamType == string.Empty)
+            if (param.Rule != null && param.Rule != string.Empty)
             {
-                SelectedType = SelectedRule.TypeList.First(t => t.ParaType == param.ParamType);
+                SelectedRule = RuleList.First(t => t.Name == param.Rule);
             }
             else
             {
+                foreach (var rule in RuleList)
+                {
+                    foreach (var item in rule.TypeList)
+                    {
+                        if (item.ParaType == param.ParamType)
+                        {
+                            SelectedRule = rule;
+                        }
+                    }
+                }
+            }
+            if (param.FamType == string.Empty)
+            {
+                SelectedType = SelectedRule.TypeList.First(t =>
+                    t.ParaType.ToUpper() == param.ParamType.ToUpper()
+                );
+            }
+            else
+            {
+                FamilyTypesView familyTypesView = new FamilyTypesView();
                 foreach (var type in FamTypeList)
                 {
-                    if (type.ParaType== param.FamType&& !SelectedRule.TypeList.Contains(type))
+                    if (type.ParaType == param.FamType)
                     {
-                        SelectedRule.TypeList.Add(type);break;
+                        bool isExist = false;
+                        foreach (var item in SelectedRule.TypeList)
+                        {
+                            if (item.Name == type.Name)
+                            {
+                                isExist = true;
+                            }
+                        }
+                        if (!isExist)
+                        {
+                            SelectedRule.TypeList.Add(type);
+                        }
+                        SelectedType = SelectedRule.TypeList.First(t => t.Name == type.Name);
+                        break;
                     }
-                    
                 }
-                SelectedType= SelectedRule.TypeList.First(t => t.ParaType == param.FamType);
             }
 
             PVisible = param.isVisible;
@@ -315,6 +343,7 @@ namespace Demo01.Models
         }
 
         List<MyType> FamTypeList = new();
+
         /// <summary>
         /// 族类型集合，用于属性修改时加载
         /// </summary>
@@ -323,8 +352,6 @@ namespace Demo01.Models
         public void Receive(ValueChangedMessage<List<MyType>> message)
         {
             FamTypeList = message.Value;
-
-
         }
     }
 }

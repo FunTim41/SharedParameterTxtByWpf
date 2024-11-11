@@ -142,10 +142,66 @@ namespace Demo01.ViewModels
         [RelayCommand]
         void LoadSharedFile()
         {
+            GroupList.Clear();
             OpenFileDialog openFile = new OpenFileDialog();
             if (openFile.ShowDialog() == true)
             {
                 FilePath = openFile.FileName;
+            }
+            try
+            {
+                List<ParaGroup> allParaGroup = new List<ParaGroup>();
+                List<Param> allParam = new List<Param>();
+                foreach (var line in File.ReadLines(FilePath))
+                {
+                    //Console.WriteLine(line);
+                    List<string> parts = line.Split('\t').ToList(); // 根据制表符分割字符串
+                    if (parts.First().Equals("GROUP"))
+                    {
+                        ParaGroup group = new ParaGroup();
+                        group.Id = int.Parse(parts[1]);
+                        group.Name = parts[2];
+
+                        allParaGroup.Add(group);
+                    }
+                    if (parts.First().Equals("PARAM"))
+                    {
+                        Param param = new Param();
+                        param.Guid = parts[1];
+                        param.Name = parts[2];
+                        param.ParamType = parts[3];
+                        param.FamType = parts[4];
+                        param.GroupId = int.Parse(parts[5]);
+                        param.isVisible = Convert.ToBoolean(int.Parse(parts[6]));
+                        param.Describe = parts[7];
+                        param.isUserCanModify = Convert.ToBoolean(int.Parse(parts[8]));
+                        allParam.Add(param);
+                    }
+                }
+
+                var dic = allParaGroup.ToDictionary(it => it.Id);
+                var li = allParam.GroupBy(p => p.GroupId);
+                foreach (var element in li)
+                {
+                    if (dic.TryGetValue(element.Key, out var item))
+                    {
+                        foreach (var p in element)
+                        {
+                            item.ParamList.Add(p);
+                        }
+                    }
+                }
+
+                foreach (var group in allParaGroup)
+                {
+                    GroupList.Add(group);
+                }
+                SelectedGroup = GroupList[0];
+                SelectedPara = SelectedGroup.ParamList[0];
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error reading file: {ex.Message}");
             }
         }
 
@@ -287,7 +343,11 @@ namespace Demo01.ViewModels
         [RelayCommand]
         void SelectedChanged()
         {
-            if (SelectedGroup.ParamList.Count != 0)
+            if (
+                SelectedGroup != null
+                && SelectedGroup.ParamList != null
+                && SelectedGroup.ParamList.Count != 0
+            )
             {
                 SelectedPara = SelectedGroup.ParamList[0];
             }
@@ -340,22 +400,21 @@ namespace Demo01.ViewModels
                 isListCountIsZero();
                 SelectedPara = NewParam;
             }
-            else{
-              MessageBoxResult messageBoxResult=  MessageBox.Show(
-                        "是否修改",
-                        "提示",
-                        MessageBoxButton.YesNo,
-                        MessageBoxImage.Warning
-                    );
-                if (messageBoxResult==MessageBoxResult.Yes)
+            else
+            {
+                MessageBoxResult messageBoxResult = MessageBox.Show(
+                    "是否修改",
+                    "提示",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning
+                );
+                if (messageBoxResult == MessageBoxResult.Yes)
                 {
                     var list = SelectedGroup.ParamList.Where(x => x.Name == NewParam.Name).ToList();
-                    list.ForEach(t=> SelectedGroup.ParamList.Remove(t)); 
+                    list.ForEach(t => SelectedGroup.ParamList.Remove(t));
                     SelectedGroup.ParamList.Add(NewParam);
                     SelectedPara = NewParam;
                 }
-
-
             }
         }
 

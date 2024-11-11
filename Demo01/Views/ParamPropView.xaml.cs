@@ -27,7 +27,13 @@ namespace Demo01.Views
         protected ParamPropView()
         {
             InitializeComponent();
-            this.DataContext = new PropViewModel();
+            this.DataContext = new PropViewModel(); TitleBar.MouseMove += (s, e) =>
+            {
+                if (e.LeftButton == MouseButtonState.Pressed)
+                {
+                    this.DragMove();
+                }
+            };
             WeakReferenceMessenger.Default.Register<CloseWindowMessage, string>(
                 this,
                 "关闭属性窗口",
@@ -51,9 +57,6 @@ namespace Demo01.Views
             }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            this.Hide();
-        }
+       
     }
 }
